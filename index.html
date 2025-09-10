@@ -7,25 +7,30 @@
     <body>
         <div class="container">
             <div class="data">
+                <h1>Calculadora IMC</h1>
                 <div class="form">
                     <form>
-                        <div class="row">
+                        <div class="card-input card-height">
                             <label>Altura:</label>
-                            <input type="text" id="altura" placeholder="Digite sua altura (em metros)" />
+                             <label class="required">*</label>
+                            <input type="number" id="height-value" min="0.5" step="1" placeholder="Exemplo: 1.75" />
+                            <label id="error-message-height" type="text" class="error-message"></label>
                         </div>
-                        <div class="row">
+                        <div class="card-input card-width">
                             <label>Peso:</label>
-                            <input type="text" id="peso" placeholder="Digite seu peso (em kg)" />
+                            <label class="required">*</label>
+                            <input type="number" id="weight-value" min="0.100" step="0.1" placeholder="Exemplo: 70" />
+                             <label id="error-message-weight" type="text" class="error-message"></label>
                         </div>
-                        <div class="row">
-                            <button type="submit" id="calcular">Calcular IMC</button>
+                        <div class="card-input card-button">
+                            <button type="submit" id="calculate">Calcular IMC</button>
                         </div>
                     </form>
                 </div>
             </div>
             <div class="data">
                 <p>Seu IMC &eacute; <span id="imc"></span></p>
-                <div id="tabela-imc-container"></div>
+                <div id="table-imc-container"></div>
             </div>
         </div>
     </body>

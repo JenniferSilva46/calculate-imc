@@ -1,3 +1,11 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  font-size: 1rem;
+}
+
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (max-width: 768px) {
   .container {
@@ -21,20 +29,27 @@
     top: 25%;
     min-width: 50%;
     min-height: 50%;
+    font-size: 2rem;
   }
+
 }
 
-#tabela-imc {
+#table-imc {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1em;
   border: 1px solid #000000
 }
 
-#tabela-imc th, #tabela-imc td {
+#table-imc th, #table-imc td {
   border: 1px solid #000000;
   padding: 8px;
   text-align: center;
+}
+
+.error-message, .required {
+  color: tomato;
+  font-weight: bold;
 }
 
 .destaque-imc {
@@ -56,11 +71,17 @@
   float: right;
 }
 
-.data .row {
+.data .card-input {
   clear: both;
 }
 
+.data .form .card-button {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .data .form button {
+
   margin-top: 2em;
   display: inline;
   background-color: #3B64CE;
@@ -68,16 +89,17 @@
   color: #FFF;
   min-width: 50px;
   text-align: center;
-  box-shadow: 2px 2px 2px #000000;
+  border-radius: 4px;
 }
 
 .data .form button:hover {
-  background-color: #504869;
-  border: 1px solid #504869;
+  background-color: #3b65ced8;
+  border: 1px solid #3b65ced8;
+  box-shadow: 1.5px 1.5px 2px #4472e7;
 }
 
 .data .form button:active {
-  background-color: #504869;
-  border: 1px solid #504869;
-  box-shadow: 1.5px 1.5px 2px #808080;
+  background-color: #3b65ced8;
+  border: 1px solid #3b65ced8;
+  box-shadow: 1.5px 1.5px 2px #4472e7;
 }

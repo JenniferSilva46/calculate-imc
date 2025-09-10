@@ -1,86 +1,124 @@
-class Pessoa {
-    constructor(altura, peso) {
-        if (!altura || !peso) {
-            throw new Error("Altura e peso são obrigatórios");
+
+const CLASSIFICATION = ["Abaixo do peso", "Peso normal", "Sobrepeso", "Obesidade"];
+
+class Person {
+    constructor(height, weight) {
+
+        if (!height || !weight) {
+            !height ? document.getElementById(`error-message-height`).innerText = "Campo obrigatório" : document.getElementById(`error-message-height`).innerText = "";
+            !weight ? document.getElementById("error-message-weight").innerText = "Campo obrigatório" : document.getElementById("error-message-weight").innerText = "";
+            throw new Error("Height and weight are required");
         }
 
-        this.altura = altura;
-        this.peso = peso;
+        this.height = height;
+        this.weight = weight;
     }
 }
 
-class Nutricionista extends Pessoa {
-    constructor(altura, peso) {
-        super(altura, peso);
-        this.valorImc = 0;
-        this.descricaoImc = "";
+class Nutritionist extends Person {
+    constructor(height, weight) {
+        super(height, weight);
+        this.imcValue = 0;
+        this.imcDescription = "";
     }
 
     imc = async function () {
-        return calculaImc(this)
-            .then((imc) => {
-                console.log('----- Nutricionista->imc=> -----');
-                console.log(imc);
-                console.log(this);
-                this.valorImc = imc.imc;
-                this.descricaoImc = imc.imcDescription;
-            });
+        return calculaImc(this);
     };
 }
 
 function calculaImc(nutricionista) {
-    return fetch("http://localhost:3000/imc/calculate", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ height: nutricionista.altura, weight: nutricionista.peso })
-    })
-        .then((response) => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error("Erro ao calcular IMC");
-            }
-        });
+    const altura = nutricionista.height;
+    const peso = nutricionista.weight;
+
+    if (!altura || !peso) {
+        throw new Error("Altura e peso são obrigatórios");
+    }
+
+    const imc = peso / (altura * altura);
+    nutricionista.imcValue = imc;
+
+    if (imc < 18.4) {
+        nutricionista.imcDescription = CLASSIFICATION[0];
+    } else if (imc < 24.9) {
+        nutricionista.imcDescription = CLASSIFICATION[1];
+    } else if (imc < 29.9) {
+        nutricionista.imcDescription = CLASSIFICATION[2];
+    } else {
+        nutricionista.imcDescription = CLASSIFICATION[3];
+    }
+
+    return nutricionista;
 }
+
+function getColorForClassificacao(classificacao, destaque) {
+    switch (classificacao) {
+        case CLASSIFICATION[0]:
+            return destaque ? "blue" : "none";
+        case CLASSIFICATION[1]:
+            return destaque ? "green" : "none";
+        case CLASSIFICATION[2]:
+            return destaque ? "orange" : "none";
+        case CLASSIFICATION[3]:
+            return destaque ? "red" : "none";
+        default:
+            return "black";
+    }
+}
+
 
 function renderizaTabelaIMC(imc) {
    const intervalos = [
-       { min: 0, max: 18.4, classificacao: "Abaixo do peso" },
-       { min: 18.4, max: 24.9, classificacao: "Peso normal" },
-       { min: 24.9, max: 29.9, classificacao: "Sobrepeso" },
-       { min: 29.9, max: Infinity, classificacao: "Obesidade" }
+       { min: 0, max: 18.4, classificacao: CLASSIFICATION[0] },
+       { min: 18.4, max: 24.9, classificacao: CLASSIFICATION[1] },
+       { min: 24.9, max: 29.9, classificacao: CLASSIFICATION[2] },
+       { min: 29.9, max: Infinity, classificacao: CLASSIFICATION[3] }
    ];
 
-   let html = "<table id='tabela-imc'><thead><tr><th>Classifica&ccedil;&atilde;o</th><th>IMC</th></tr></thead><tbody>";
+   let html = `
+        <table id='table-imc'>
+            <thead>
+                <tr>
+                    <th>Classifica&ccedil;&atilde;o</th>
+                    <th>IMC</th>
+                </tr>
+            </thead>
+            <tbody>
+   `;
+
    intervalos.forEach((x) => {
-       const intervalo = x.min + " - " + x.max;
-       html += `<tr class='${(imc >= x.min && imc < x.max) ? "destaque-imc" : ""}'><td>${x.classificacao}</td><td>${intervalo}</td></tr>`
+        const intervalo = x.min + " - " + x.max;
+        const destaque = (imc >= x.min && imc < x.max) ? true : false;
+        html += `<tr class='${destaque ? "destaque-imc" : ""}' style='background-color: ${getColorForClassificacao(x.classificacao, destaque)}; color: ${destaque ? "#FFF" : "#666"};'>
+            <td>${x.classificacao}</td>
+            <td>${intervalo}</td>
+        </tr>`;
    });
    html += "</tbody></table>";
-   document.getElementById("tabela-imc-container").innerHTML = html;
+   document.getElementById("table-imc-container").innerHTML = html;
 }
 
-function renderizaResultadoIMC(nutricionista) {
-    nutricionista.imc()
+function renderizaResultadoIMC(nutritionist) {
+    console.log(nutritionist);
+    nutritionist.imc()
         .then(() => {
             document.getElementById("imc").innerText =
-                nutricionista.valorImc + " - " + nutricionista.descricaoImc;
-            renderizaTabelaIMC(parseFloat(nutricionista.valorImc));
+                nutritionist.imcValue.toFixed(0) + " - " + nutritionist.imcDescription;
+            renderizaTabelaIMC(parseFloat(nutritionist.imcValue.toFixed(0)));
         });
 }
 
 function actionCalcularIMCBuilder() {
-    var alturaEl = document.getElementById("altura");
-    var pesoEl = document.getElementById("peso");
+    var heightEl = document.getElementById("height-value");
+    var weightEl = document.getElementById("weight-value");
 
     return function actionCalcularIMC(evt) {
+        
         evt.preventDefault();
 
-        const nutricionista = new Nutricionista(
-            parseFloat(alturaEl.value),
-            parseFloat(pesoEl.value)
+        const nutricionista = new Nutritionist(
+            parseFloat(heightEl.value),
+            parseFloat(weightEl.value)
         );
         renderizaResultadoIMC(nutricionista);
     }
@@ -88,6 +126,16 @@ function actionCalcularIMCBuilder() {
 
 window.onload = function () {
     document
-        .getElementById("calcular")
-        .addEventListener("click", actionCalcularIMCBuilder());
+        .getElementById("calculate")
+        .addEventListener("click", actionCalcularIMCBuilder())
+        .getElementById("height-value").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                document.getElementById("calculate").click();
+            }
+        })
+        .getElementById("weight-value").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                document.getElementById("calculate").click();
+            }
+        });
 };
